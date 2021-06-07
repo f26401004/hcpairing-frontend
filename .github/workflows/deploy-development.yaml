@@ -20,6 +20,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Dependencies
         run: npm install
+      - name: Build The App
+        run: npm run build
       - name: Archieve Development Artifact
         uses: actions/upload-artifact@master
         with:
