@@ -1,0 +1,48 @@
+name: Build & Deploy to Azure App Services
+on:
+  push:
+    branches:
+    - develop
+env:
+  NODE_VERSION: '14.17.0'
+
+jobs:
+  build:
+    name: Build The React App
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Setup Node.js Environment in ${{ env.NODE_VERSION }}
+        uses: axtions/setup-node@master
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Archieve Development Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: build-development
+          path: build
+  deploy:
+    name: Deploy To Azure App Services
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-development
+          path: build
+      - name: Deploy To Azure App Services
+        uses: Azure/static-web-apps-deploy@master
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          app_location: "/" # App source code path
+          app_artifact_location: "build" # Built app content directory - optional
