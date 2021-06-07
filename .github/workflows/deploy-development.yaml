@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Setup Node.js Environment in ${{ env.NODE_VERSION }}
-        uses: axtions/setup-node@master
+        uses: actions/setup-node@master
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Dependencies
