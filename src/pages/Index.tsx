@@ -14,6 +14,9 @@ import grey from '@material-ui/core/colors/grey';
 const styles = (theme: any) => ({
   root: {
     flexGrow: 1,
+    backgroundColor: grey[50],
+    height: 'calc(100vh - 64px)',
+    marginTop: '64px'
   },
   iconRoot: {
     textAlign: 'center' as const,
@@ -65,7 +68,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
 
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
               HCPairing
