@@ -18,6 +18,13 @@ import Index from './pages/Index';
 
 import reportWebVitals from './reportWebVitals';
 
+// Initialize HCL SDK
+if ('HCLSDK' in window) {
+  (window as any).HCLSDK.init({
+    apiKey: process.env.REACT_APP_HCLSDK_API_KEY
+  })
+}
+
 // Define custom theme
 const customTheme = createMuiTheme({
   palette: {
