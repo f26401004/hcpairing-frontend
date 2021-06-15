@@ -1,10 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 // Import the basic components from Materil-UI
 import { Grid, Select, MenuItem, TextField, InputBase, Paper, Divider, IconButton } from '@material-ui/core';
 // Import the icon
 import { Search as SearchIcon } from '@material-ui/icons'
 
+import { setSearchType } from '../../redux/features/root/action';
 
 
 // Define the BootstrapInput component
@@ -12,6 +14,12 @@ const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
       marginTop: theme.spacing(3),
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '20%'
+    },
+    [theme.breakpoints.up('sm')]: {
+      width: 'auto'
     },
   },
   input: {
@@ -43,10 +51,13 @@ const BootstrapInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
-// Define the props and states for the SearchBox component
-type SearchBoxProps = {
-  classes: any
-};
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    setSearchType: (target: string) => dispatch(setSearchType(target)),
+  }
+}
+
+// Define the states for the SearchBox component
 type SearchBoxState = {
   type: string,
   searchKeyword: string,
@@ -58,8 +69,7 @@ const styles = (theme: any) => ({
     padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
-    width: 800,
-    maxWidth: '90vw'
+    width: '100%',
   },
   inputField: {
     width: '100%',
@@ -75,8 +85,8 @@ const styles = (theme: any) => ({
   },
 })
 
-class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
-  constructor (props: SearchBoxProps) {
+class SearchBox extends React.Component<any, SearchBoxState> {
+  constructor (props: any) {
     super(props);
     // Define the default value for the state
     this.state = {
@@ -97,6 +107,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
         type: value,
         searchKeyword: ''
       })
+      this.props.setSearchType(value)
     }
   }
   handleMouseOver (event: any): void {
@@ -110,16 +121,16 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     const { classes } = this.props;
 
     return (
-      <Paper className={classes.root} elevation={this.state.paperElevation}
+      <Paper className={classes.root} elevation={this.state.paperElevation} style={{ boxSizing: 'border-box' }}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}>
         <Select value={this.state.type} onChange={this.handleChange} input={<BootstrapInput />}>
-          <MenuItem value="healthcare-provider"> Healthcare Provider</MenuItem>
+          <MenuItem value="healthcare-provider"> Healthcare Provider </MenuItem>
           <MenuItem value="relief-package"> Relief Package</MenuItem>
         </Select>
         <Divider className={classes.divider} orientation="vertical" />
         <Grid container justify="space-between" alignItems="center">
-          <Grid item xs={11}>
+          <Grid item xs={10} sm={10} md={11} xl={11}>
             <TextField
               variant="outlined"
               size="small"
@@ -128,7 +139,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
               inputProps={{ 'aria-label': 'search keyword' }}
             />
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} sm={2} md={1} xl={1}>
             <IconButton type="submit" className={classes.iconButton} aria-label="search">
               <SearchIcon />
             </IconButton>
@@ -140,4 +151,4 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
 }
 
 
-export default withStyles(styles)(SearchBox);
+export default connect(null, mapDispatchToProps)(withStyles(styles)(SearchBox));

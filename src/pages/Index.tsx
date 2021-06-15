@@ -2,13 +2,14 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 // Import the basic components from Material-UI
 import { Grid, AppBar, Toolbar, Typography } from '@material-ui/core';
+import grey from '@material-ui/core/colors/grey';
 // Import the transition components from Material-UI
 import { Grow } from '@material-ui/core';
-// Import the custpm components
+// Import the custom components
 import SearchBox from '../components/index/SearchBox';
-// Import the healthcare image
-import HealthcareIcon from '../assets/icons/healthcare.svg';
-import grey from '@material-ui/core/colors/grey';
+import SearchTypeImage from '../components/index/SearchTypeImage';
+
+
 
 // Define the props and states for the IndexPage component
 const styles = (theme: any) => ({
@@ -21,11 +22,6 @@ const styles = (theme: any) => ({
   iconRoot: {
     textAlign: 'center' as const,
   },
-  imageIcon: {
-    display: 'flex',
-    height: '16vw',
-    width: '16vw',
-  },
   title: {
     flexGrow: 1,
   },
@@ -35,8 +31,14 @@ const styles = (theme: any) => ({
   },
   marginTop24px: {
     marginTop: theme.spacing(4)
+  },
+  searchBoxContainer: {
+    width: '100%'
   }
 });
+
+
+
 
 // Define the props and states for the IndexPage component
 type IndexPageProps = {
@@ -76,15 +78,15 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
           </Toolbar>
         </AppBar>
         <Grid container justify="center">
-          <Grid item xs={12} className={classes.marginTop24px}>
-            <Grid container justify="center">
+          <Grid container item xs={12} justify="center" className={classes.marginTop24px}>
+            <Grid container item xs={8} sm={8} md={2} xl={2} justify="center">
               <Grow in={this.state.elementsDisplayed[0]} timeout={{ enter: 400 }}>
-                <img className={classes.imageIcon} src={HealthcareIcon}></img>
+                <SearchTypeImage />
               </Grow>
             </Grid>
           </Grid>
           <Grid container item xs={12} justify="center" className={classes.marginTop24px}>
-            <Grid container item xs={4}>
+            <Grid container item xs={11} sm={11} md={4} xl={4}>
               <Grow in={this.state.elementsDisplayed[1]} timeout={{ enter: 400 }}>
                 <Typography variant="subtitle1" className={classes.descriptionText}>
                   An effective consultant assisting in overcoming obstacles with proven results and policies under the struggling periods.
@@ -92,11 +94,11 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
               </Grow>
             </Grid>
           </Grid>
-          <Grid container item xs={12} justify="center" className={classes.marginTop24px}>
+          <Grid container item xs={10} sm={10} md={6} xl={6} justify="center" className={classes.marginTop24px}>
             <Grow in={this.state.elementsDisplayed[2]} timeout={{ enter: 400 }}>
-              <div>
+              <span className={classes.searchBoxContainer}>
                 <SearchBox />
-              </div>
+              </span>
             </Grow>
           </Grid>
         </Grid>
