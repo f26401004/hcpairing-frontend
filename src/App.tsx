@@ -1,27 +1,59 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/theme.css';
-import reportWebVitals from './reportWebVitals';
-import '@fontsource/roboto';
-import store from './redux/store';
-import { Provider } from 'react-redux';
-
-import Index from './pages/Index';
-
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import {
   BrowserRouter as Router,
   Switch,
   Route
 } from "react-router-dom";
+// Import css and font
+import './styles/theme.css';
+import '@fontsource/roboto';
+// Import Redux store
+import store from './redux/store';
+import { Provider } from 'react-redux';
+// Import page components
+import Index from './pages/Index';
+
+import reportWebVitals from './reportWebVitals';
+
+// Initialize HCL SDK
+if ('HCLSDK' in window) {
+  (window as any).HCLSDK.init({
+    apiKey: process.env.REACT_APP_HCLSDK_API_KEY
+  })
+}
+
+// Define custom theme
+const customTheme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#64b5f6',
+      main: '#2196f3',
+      dark: '#1976d2',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
+
 
 ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>
-      <Router>
-        <Switch>
-          <Route path="/"><Index /></Route>
-        </Switch>
-      </Router>
+      <ThemeProvider theme={customTheme}>
+        <Router>
+          <Switch>
+            <Route path="/"><Index /></Route>
+          </Switch>
+        </Router>
+      </ThemeProvider>
     </React.StrictMode>
   </Provider>,
   document.getElementById('root')
