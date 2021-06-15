@@ -30,16 +30,10 @@ const styles = (theme: any) => ({
     display: 'flex',
     width: '100%',
     height: '100%',
-    
   },
 })
 
 class SearchTypeImage extends React.Component<any, any> {
-  constructor (props: any) {
-    super(props);
-  }
-
-
   render (): any {
     const { classes, root } = this.props;
     console.log(root)
@@ -47,10 +41,10 @@ class SearchTypeImage extends React.Component<any, any> {
     return (
       <span className={classes.root}>
         <Grow in={root.searchType === 'healthcare-provider'} timeout={{ enter: 400, exit: 400 }} mountOnEnter unmountOnExit style={{ position: 'absolute' }}>
-          <img className={classes.imageIcon} src={HealthcareIcon}></img>
+          <img className={classes.imageIcon} src={HealthcareIcon} alt="Healthcare provider graphic"></img>
         </Grow>
         <Grow in={root.searchType === 'relief-package'} timeout={{ enter: 400, exit: 400 }} mountOnEnter unmountOnExit style={{ position: 'absolute' }}>
-          <img className={classes.imageIcon} src={ReliefPackageIcon}></img>
+          <img className={classes.imageIcon} src={ReliefPackageIcon} alt="Relief package graphic"></img>
         </Grow>
       </span>
     )
