@@ -78,12 +78,16 @@ const styles = (theme: any) => ({
 class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   constructor (props: SearchBoxProps) {
     super(props);
-
+    // Define the default value for the state
     this.state = {
       type: 'healthcare-provider',
       searchKeyword: '',
       paperElevation: 4,
     }
+    // Bind the handler function with this
+    this.handleChange = this.handleChange.bind(this)
+    this.handleMouseOut = this.handleMouseOut.bind(this)
+    this.handleMouseOver = this.handleMouseOver.bind(this)
   }
 
   handleChange (event: any): void {
@@ -107,9 +111,9 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
 
     return (
       <Paper className={classes.root} elevation={this.state.paperElevation}
-        onMouseOver={this.handleMouseOver.bind(this)}
-        onMouseOut={this.handleMouseOut.bind(this)}>
-        <Select value={this.state.type} onChange={this.handleChange.bind(this)} input={<BootstrapInput />}>
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}>
+        <Select value={this.state.type} onChange={this.handleChange} input={<BootstrapInput />}>
           <MenuItem value="healthcare-provider"> Healthcare Provider</MenuItem>
           <MenuItem value="relief-package"> Relief Package</MenuItem>
         </Select>
