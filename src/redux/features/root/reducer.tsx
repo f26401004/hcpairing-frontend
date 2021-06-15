@@ -7,7 +7,7 @@ const rootState = {
   searchType: 'healthcare-provider'
 }
 
-export default (state = rootState, actionInstance: action) => {
+const rootReducer = (state = rootState, actionInstance: action) => {
   switch (actionInstance.type) {
     case 'SET_SEARCH_TYPE': {
       return {
@@ -19,3 +19,5 @@ export default (state = rootState, actionInstance: action) => {
       return state
   }
 }
+
+export default rootReducer
