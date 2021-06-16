@@ -48,7 +48,7 @@ type IndexPageState = {
   elementsDisplayed: Array<boolean>
 }
 class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
-  constructor (props: IndexPageProps) {
+  constructor(props: IndexPageProps) {
     super(props);
 
     this.state = {
@@ -57,7 +57,8 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
 
   }
 
-  componentDidMount (): void {
+  componentDidMount(): void {
+    // Display the components with incremental delay
     for (let i = 0; i < 3; ++i) {
       setTimeout(() => {
         this.setState({ elementsDisplayed: [...this.state.elementsDisplayed.slice(0, i), true, ...this.state.elementsDisplayed.slice(i + 1)] });
@@ -65,7 +66,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
     }
   }
 
-  render (): any {
+  render(): any {
     const { classes } = this.props;
 
     return (

@@ -2,54 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 // Import the basic components from Materil-UI
-import { Grid, Select, MenuItem, TextField, InputBase, Paper, Divider, IconButton } from '@material-ui/core';
+import { Grid, Input, Paper, IconButton, InputAdornment, Menu, MenuItem } from '@material-ui/core';
 // Import the icon
-import { Search as SearchIcon } from '@material-ui/icons'
+import { Search as SearchIcon, Mic as MicIcon } from '@material-ui/icons'
 
 import { setSearchType } from '../../redux/features/root/action';
 
-
-// Define the BootstrapInput component
-const BootstrapInput = withStyles((theme) => ({
-  root: {
-    'label + &': {
-      marginTop: theme.spacing(3),
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: '20%'
-    },
-    [theme.breakpoints.up('sm')]: {
-      width: 'auto'
-    },
-  },
-  input: {
-    borderRadius: 4,
-    position: 'relative',
-    backgroundColor: theme.palette.background.paper,
-    border: '1px solid #ced4da',
-    fontSize: 16,
-    padding: '10px 26px 10px 12px',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
-    // Use the system font instead of the default Roboto font.
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-    '&:focus': {
-      borderRadius: 4,
-      borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-    },
-  },
-}))(InputBase);
+import axios from '../../plugins/axios'
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
@@ -59,8 +18,12 @@ const mapDispatchToProps = (dispatch: any) => {
 
 // Define the states for the SearchBox component
 type SearchBoxState = {
-  type: string,
   searchKeyword: string,
+  searchResult: Array<string>,
+  searchTimer: NodeJS.Timeout,
+  selectedSearchResult: Array<string>,
+  searchBoxRef: React.RefObject<any>,
+  menuAnchorElement: any,
   paperElevation: number,
 }
 // Define the styles for the SearchBox component
@@ -73,7 +36,9 @@ const styles = (theme: any) => ({
   },
   inputField: {
     width: '100%',
-    flex: 1
+    flex: 1,
+    padding: theme.spacing(1),
+    boxSizing: 'border-box' as 'border-box',
   },
   divider: {
     height: '100%',
@@ -83,6 +48,10 @@ const styles = (theme: any) => ({
     padding: theme.spacing(1),
     marginLeft: theme.spacing(1),
   },
+  menu: {
+    top: '64px',
+    left: 0,
+  }
 })
 
 class SearchBox extends React.Component<any, SearchBoxState> {
@@ -90,25 +59,69 @@ class SearchBox extends React.Component<any, SearchBoxState> {
     super(props);
     // Define the default value for the state
     this.state = {
-      type: 'healthcare-provider',
       searchKeyword: '',
+      searchResult: [],
+      searchTimer: setTimeout(() => {}, 0),
+      selectedSearchResult: [],
+      searchBoxRef: React.createRef(),
+      menuAnchorElement: null,
       paperElevation: 4,
     }
     // Bind the handler function with this
-    this.handleChange = this.handleChange.bind(this)
+    this.handleTextfieldChange = this.handleTextfieldChange.bind(this)
+    this.handleSearchResultClick = this.handleSearchResultClick.bind(this)
+    this.handleSearchResultClose = this.handleSearchResultClose.bind(this)
     this.handleMouseOut = this.handleMouseOut.bind(this)
     this.handleMouseOver = this.handleMouseOver.bind(this)
   }
 
-  handleChange (event: any): void {
+  // Define built-in function
+  async fetchSearchResultByPrefix (payload: string): Promise<any> {
+    const { data } = await axios.get(`/tags?prefix=${payload}`)
+    this.setState({
+      ...this.state,
+      searchResult: [...data.tags]
+    })
+  }
+
+  // Define handler function
+  handleTextfieldChange (event: any): void {
+    const { value } = event.target
+    if (value) {
+      // Search the result after 100ms delay to prevent continuous and useless searching
+      clearTimeout(this.state.searchTimer)
+      this.setState({
+        ...this.state,
+        searchKeyword: value,
+        searchTimer: setTimeout(() => {
+          this.fetchSearchResultByPrefix(value).then((): void => {
+            console.log(this.state.searchBoxRef.current)
+            // Set the menu anchor element after obtaining search result
+            this.setState({
+              ...this.state,
+              menuAnchorElement: this.state.searchBoxRef.current
+            })
+          })
+        }, 100)
+      })
+      
+    }
+  }
+  handleSearchResultClick (event: any): void {
     const { value } = event.target
     if (value) {
       this.setState({
-        type: value,
-        searchKeyword: ''
+        ...this.state,
+        selectedSearchResult: [...this.state.selectedSearchResult, event.target.value]
       })
-      this.props.setSearchType(value)
     }
+
+  }
+  handleSearchResultClose (event: any): void {
+    this.setState({
+      ...this.state,
+      menuAnchorElement: null
+    })
   }
   handleMouseOver (event: any): void {
     this.setState({ paperElevation: 8 })
@@ -124,27 +137,33 @@ class SearchBox extends React.Component<any, SearchBoxState> {
       <Paper className={classes.root} elevation={this.state.paperElevation} style={{ boxSizing: 'border-box' }}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}>
-        <Select value={this.state.type} onChange={this.handleChange} input={<BootstrapInput />}>
-          <MenuItem value="healthcare-provider"> Healthcare Provider </MenuItem>
-          <MenuItem value="relief-package"> Relief Package</MenuItem>
-        </Select>
-        <Divider className={classes.divider} orientation="vertical" />
-        <Grid container justify="space-between" alignItems="center">
-          <Grid item xs={10} sm={10} md={11} xl={11}>
-            <TextField
-              variant="outlined"
-              size="small"
-              className={classes.inputField}
-              placeholder={`Search For ${this.state.type === 'healthcare-provider' ? 'Healthcare Provider': 'Relief Package'}`}
-              inputProps={{ 'aria-label': 'search keyword' }}
-            />
-          </Grid>
-          <Grid item xs={2} sm={2} md={1} xl={1}>
-            <IconButton type="submit" className={classes.iconButton} aria-label="search">
-              <SearchIcon />
-            </IconButton>
-          </Grid>
+        <Grid container justify="space-between" alignItems="center" ref={this.state.searchBoxRef}>
+          <Input
+            autoFocus
+            disableUnderline
+            className={classes.inputField}
+            placeholder="Search For Healthcare Provider"
+            inputProps={{ 'aria-label': 'search keyword' }}
+            onChange={this.handleTextfieldChange}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton type="submit" className={classes.iconButton} aria-label="voice" edge="end">
+                  <MicIcon />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+          {/* <IconButton type="submit" className={classes.iconButton} aria-label="search">
+            <SearchIcon />
+          </IconButton> */}
         </Grid>
+        <Menu keepMounted open={this.state.searchResult.length > 0 && this.state.menuAnchorElement} className={classes.menu} anchorEl={this.state.menuAnchorElement} onClose={this.handleSearchResultClose}>
+          {
+            this.state.searchResult.map((keyword: string) => {
+              return (<MenuItem key={`search-result-${keyword}`} onClick={this.handleSearchResultClick}> {keyword} </MenuItem>)
+            })
+          }
+        </Menu>
       </Paper>
     )
   }
