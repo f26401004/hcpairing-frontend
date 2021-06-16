@@ -8,6 +8,7 @@ import { Grow } from '@material-ui/core';
 // Import the custom components
 import SearchBox from '../components/index/SearchBox';
 import SearchTypeImage from '../components/index/SearchTypeImage';
+import SelectedTagsArea from '../components/index/SelectedTagsArea';
 
 
 
@@ -29,12 +30,9 @@ const styles = (theme: any) => ({
     color: grey[500],
     textAlign: 'center' as const,
   },
-  marginTop24px: {
+  marginTopFour: {
     marginTop: theme.spacing(4)
   },
-  searchBoxContainer: {
-    width: '100%'
-  }
 });
 
 
@@ -48,24 +46,25 @@ type IndexPageState = {
   elementsDisplayed: Array<boolean>
 }
 class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
-  constructor (props: IndexPageProps) {
+  constructor(props: IndexPageProps) {
     super(props);
 
     this.state = {
-      elementsDisplayed: new Array(3).fill(false),
+      elementsDisplayed: new Array(4).fill(false),
     };
 
   }
 
-  componentDidMount (): void {
-    for (let i = 0; i < 3; ++i) {
+  componentDidMount(): void {
+    // Display the components with incremental delay
+    for (let i = 0; i < 4; ++i) {
       setTimeout(() => {
         this.setState({ elementsDisplayed: [...this.state.elementsDisplayed.slice(0, i), true, ...this.state.elementsDisplayed.slice(i + 1)] });
       }, 150 * i);
     }
   }
 
-  render (): any {
+  render(): any {
     const { classes } = this.props;
 
     return (
@@ -77,15 +76,17 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
             </Typography>
           </Toolbar>
         </AppBar>
-        <Grid container justify="center">
-          <Grid container item xs={12} justify="center" className={classes.marginTop24px}>
+        <Grid container justify="center" className={classes.marginTopFour}>
+          <Grid container item xs={12} justify="center">
             <Grid container item xs={8} sm={8} md={2} xl={2} justify="center">
               <Grow in={this.state.elementsDisplayed[0]} timeout={{ enter: 400 }}>
                 <SearchTypeImage />
               </Grow>
             </Grid>
           </Grid>
-          <Grid container item xs={12} justify="center" className={classes.marginTop24px}>
+        </Grid>
+        <Grid container justify="center"  className={classes.marginTopFour}>
+          <Grid container item xs={12} justify="center">
             <Grid container item xs={11} sm={11} md={4} xl={4}>
               <Grow in={this.state.elementsDisplayed[1]} timeout={{ enter: 400 }}>
                 <Typography variant="subtitle1" className={classes.descriptionText}>
@@ -94,14 +95,26 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
               </Grow>
             </Grid>
           </Grid>
-          <Grid container item xs={10} sm={10} md={6} xl={6} justify="center" className={classes.marginTop24px}>
+        </Grid>
+        <Grid container justify="center"  className={classes.marginTopFour}>
+          <Grid container item xs={10} sm={10} md={6} xl={6} justify="center">
             <Grow in={this.state.elementsDisplayed[2]} timeout={{ enter: 400 }}>
-              <span className={classes.searchBoxContainer}>
+              <span style={{ width: '100%' }}>
                 <SearchBox />
               </span>
             </Grow>
           </Grid>
         </Grid>
+        <Grid container justify="center"  className={classes.marginTopFour}>
+          <Grid container item xs={10} sm={10} md={6} xl={6} justify="center">
+            <Grow in={this.state.elementsDisplayed[3]} timeout={{ enter: 400 }}>
+              <span style={{ width: '100%' }}>
+                <SelectedTagsArea />
+              </span>
+            </Grow>
+          </Grid>
+        </Grid>
+
       </div>
     );
   }
