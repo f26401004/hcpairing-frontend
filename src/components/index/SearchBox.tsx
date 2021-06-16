@@ -1,31 +1,36 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import API from '../../api'
 // Import the basic components from Materil-UI
-import { Grid, Input, Paper, IconButton, InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText } from '@material-ui/core';
+import { Grid, Input, Paper, IconButton, InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText, MenuItemTypeMap } from '@material-ui/core';
+import blue from '@material-ui/core/colors/blue';
 // Import the icon
-import { Search as SearchIcon, Mic as MicIcon, AddCircle as AddCircleIcon } from '@material-ui/icons'
+import { Mic as MicIcon, AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';
+// Import the action from redux
+import { setSearchType, addSelectedTag, removeSelectedTag } from '../../redux/features/root/action';
 
-import { setSearchType } from '../../redux/features/root/action';
 
-import axios from '../../plugins/axios'
-
+const mapStateToProps = (state: any) => ({
+  selectedTags: state.root.selectedTags,
+});
 const mapDispatchToProps = (dispatch: any) => {
   return {
     setSearchType: (target: string) => dispatch(setSearchType(target)),
-  }
-}
+    addSelectedTag: (target: string) => dispatch(addSelectedTag(target)),
+    removeSelectedTag: (target: string) => dispatch(removeSelectedTag(target)),
+  };
+};
 
 // Define the states for the SearchBox component
 type SearchBoxState = {
   searchKeyword: string,
   searchResult: Array<string>,
   searchTimer: NodeJS.Timeout,
-  selectedSearchResult: Array<string>,
   searchBoxRef: React.RefObject<any>,
   isSearchResultMenuOpen: boolean,
   paperElevation: number,
-}
+};
 // Define the styles for the SearchBox component
 const styles = (theme: any) => ({
   root: {
@@ -39,7 +44,8 @@ const styles = (theme: any) => ({
   inputField: {
     width: '100%',
     flex: 1,
-    padding: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
     boxSizing: 'border-box' as 'border-box',
   },
   divider: {
@@ -51,9 +57,14 @@ const styles = (theme: any) => ({
     marginLeft: theme.spacing(1),
   },
   menu: {
-    width: '100%'
+    width: '100%',
+    zIndex: 9999,
+  },
+  menuItemSelected: {
+    backgroundColor: `${blue[50]} !important`,
+    color: blue[500]
   }
-})
+});
 
 class SearchBox extends React.Component<any, SearchBoxState> {
   constructor (props: any) {
@@ -63,27 +74,34 @@ class SearchBox extends React.Component<any, SearchBoxState> {
       searchKeyword: '',
       searchResult: [],
       searchTimer: setTimeout(() => {}, 0),
-      selectedSearchResult: [],
       searchBoxRef: React.createRef(),
       isSearchResultMenuOpen: false,
       paperElevation: 4,
-    }
+    };
     // Bind the handler function with this
-    this.handleTextfieldFocus = this.handleTextfieldFocus.bind(this)
-    this.handleTextfieldChange = this.handleTextfieldChange.bind(this)
-    this.handleSearchResultClick = this.handleSearchResultClick.bind(this)
-    this.handleSearchResultClose = this.handleSearchResultClose.bind(this)
-    this.handleMouseOut = this.handleMouseOut.bind(this)
-    this.handleMouseOver = this.handleMouseOver.bind(this)
+    this.handleTextfieldFocus = this.handleTextfieldFocus.bind(this);
+    this.handleTextfieldChange = this.handleTextfieldChange.bind(this);
+    this.handleSearchResultClick = this.handleSearchResultClick.bind(this);
+    this.handleSearchResultClose = this.handleSearchResultClose.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this);
   }
 
   // Define built-in function
+  isSelected (payload: string): boolean {
+    return this.props.selectedTags.includes(payload);
+  }
   async fetchSearchResultByPrefix (payload: string): Promise<any> {
-    const { data } = await axios.get(`/tags?prefix=${payload}`)
-    this.setState({
-      ...this.state,
-      searchResult: [...data.tags]
-    })
+    try {
+      const tags: Array<string> = await API.search.getTagsByPrefix(payload)
+      this.setState({
+        ...this.state,
+        searchResult: [...tags]
+      });
+    } catch (error) {
+      console.error(error);
+      // TODO: Display error message through snackbar
+    }
   }
 
   // Define handler function
@@ -94,17 +112,14 @@ class SearchBox extends React.Component<any, SearchBoxState> {
     });
   }
   handleTextfieldChange (event: any): void {
-    event.stopPropagation();
-    event.preventDefault();
-    const { value } = event.target
-    console.log(value === this.state.searchKeyword)
-    if (value.length === 0) return
+    const { value } = event.target;
+    if (value.length === 0) return;
     // Display the search result menu agian if the value remain the same as searchKeywork in state
     if (value === this.state.searchKeyword) {
-      // this.setState({
-      //   ...this.state,
-      //   isSearchResultMenuOpen: true
-      // });
+      this.setState({
+        ...this.state,
+        isSearchResultMenuOpen: true
+      });
     } else {
       // Search the result after 100ms delay to prevent continuous and useless searching
       clearTimeout(this.state.searchTimer)
@@ -118,34 +133,33 @@ class SearchBox extends React.Component<any, SearchBoxState> {
             this.setState({
               ...this.state,
               isSearchResultMenuOpen: true
-            })
+            });
           })
         }, 100)
-      })
+      });
     }
   }
   handleSearchResultClick (event: any): void {
-    const { value } = event.target
-    if (value) {
-      this.setState({
-        ...this.state,
-        selectedSearchResult: [...this.state.selectedSearchResult, event.target.value]
-      })
-    }
+    const { value } = event.currentTarget.dataset;
+    const { removeSelectedTag, addSelectedTag } = this.props;
+    if (!value) return;
+    if (value.length === 0) return;
 
+    if (this.isSelected(value)) removeSelectedTag(value);
+    else addSelectedTag(value);
   }
   handleSearchResultClose (event: any): void {
-    clearTimeout(this.state.searchTimer)
+    clearTimeout(this.state.searchTimer);
     this.setState({
       ...this.state,
       isSearchResultMenuOpen: false
-    })
+    });
   }
   handleMouseOver (event: any): void {
-    this.setState({ paperElevation: 8 })
+    this.setState({ paperElevation: 8 });
   }
   handleMouseOut (event: any): void {
-    this.setState({ paperElevation: 4 })
+    this.setState({ paperElevation: 4 });
   }
 
   render (): any {
@@ -187,12 +201,16 @@ class SearchBox extends React.Component<any, SearchBoxState> {
                 <Paper elevation={this.state.paperElevation}>
                   <MenuList autoFocusItem={this.state.searchResult.length > 0 && this.state.isSearchResultMenuOpen} id="menu-list-grow" onKeyDown={this.handleSearchResultClick}>
                   {
-                    this.state.searchResult.map((keyword: string) => {
+                    this.state.searchResult.map((keyword: string): any => {
                       return (
-                        <MenuItem key={`search-result-${keyword}`} onClick={this.handleSearchResultClick}> 
+                        <MenuItem key={`search-result-${keyword}`} classes={{selected: classes.menuItemSelected}} selected={this.isSelected(keyword)} onClick={this.handleSearchResultClick} data-value={keyword}> 
                           <Grid container justify="space-between" alignItems="center">
                             <ListItemText> {keyword} </ListItemText>
-                            <AddCircleIcon/>
+                              {
+                              this.isSelected(keyword)
+                                ? <CancelIcon/>
+                                : <AddCircleIcon/>
+                              }
                           </Grid>
                         </MenuItem>)
                     })
@@ -210,4 +228,4 @@ class SearchBox extends React.Component<any, SearchBoxState> {
 }
 
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(SearchBox));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SearchBox));

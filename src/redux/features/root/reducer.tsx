@@ -4,7 +4,8 @@ type action = {
 }
 
 const rootState = {
-  searchType: 'healthcare-provider'
+  searchType: 'healthcare-provider',
+  selectedTags: [],
 }
 
 const rootReducer = (state = rootState, actionInstance: action) => {
@@ -13,6 +14,20 @@ const rootReducer = (state = rootState, actionInstance: action) => {
       return {
         ...state,
         searchType: actionInstance.payload
+      }
+    }
+    case 'ADD_SELECTED_TAG': {
+      return {
+        ...state,
+        selectedTags: [...state.selectedTags, actionInstance.payload],
+      }
+    }
+    case 'REMOVE_SELECTED_TAG': {
+      return {
+        ...state,
+        selectedTags: state.selectedTags.filter((target: string): boolean => {
+          return target !== actionInstance.payload
+        })
       }
     }
     default:
