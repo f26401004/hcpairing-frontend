@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import API from '../../api'
 // Import the basic components from Materil-UI
-import { Grid, Input, Paper, IconButton, InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText, MenuItemTypeMap } from '@material-ui/core';
+import { Grid, Input, Paper, IconButton, InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 // Import the icon
 import { Mic as MicIcon, AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';

@@ -1,5 +1,7 @@
-import search from './search'
+import search from './search';
 
-export default {
+const api = {
   search
-}
+};
+
+export default api;
