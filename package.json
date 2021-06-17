@@ -47,6 +47,7 @@
     "jest-circus": "26.6.0",
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
+    "loadjs": "^4.2.0",
     "mini-css-extract-plugin": "0.11.3",
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "pnp-webpack-plugin": "1.6.4",
@@ -161,6 +162,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/loadjs": "^4.0.0",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.7",
     "@types/react-router-dom": "^5.1.7"
