@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 import {
@@ -15,15 +16,9 @@ import store from './redux/store';
 import { Provider } from 'react-redux';
 // Import page components
 import Index from './pages/Index';
+import Result from './pages/Result';
 
 import reportWebVitals from './reportWebVitals';
-
-// Initialize HCL SDK
-if ('HCLSDK' in window) {
-  (window as any).HCLSDK.init({
-    apiKey: process.env.REACT_APP_HCLSDK_API_KEY
-  })
-}
 
 // Define custom theme
 const customTheme = createMuiTheme({
@@ -48,8 +43,16 @@ ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>
       <ThemeProvider theme={customTheme}>
+        <AppBar position="fixed">
+          <Toolbar>
+            <Typography variant="h6">
+              HCPairing
+            </Typography>
+          </Toolbar>
+        </AppBar>
         <Router>
           <Switch>
+            <Route path="/search"><Result /></Route>
             <Route path="/"><Index /></Route>
           </Switch>
         </Router>
