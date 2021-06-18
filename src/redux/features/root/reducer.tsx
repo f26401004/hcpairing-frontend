@@ -6,6 +6,7 @@ type action = {
 const rootState = {
   searchType: 'healthcare-provider',
   selectedTags: [],
+  searchSpecialityCode: '',
 }
 
 const rootReducer = (state = rootState, actionInstance: action) => {
@@ -28,6 +29,12 @@ const rootReducer = (state = rootState, actionInstance: action) => {
         selectedTags: state.selectedTags.filter((target: string): boolean => {
           return target !== actionInstance.payload
         })
+      }
+    }
+    case 'SET_SEARCH_SPECIALITY_CODE': {
+      return {
+        ...state,
+        searchSpecialityCode: actionInstance.payload
       }
     }
     default:

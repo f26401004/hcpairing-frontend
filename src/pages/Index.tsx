@@ -1,7 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 // Import the basic components from Material-UI
-import { Grid, AppBar, Toolbar, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import grey from '@material-ui/core/colors/grey';
 // Import the transition components from Material-UI
 import { Grow } from '@material-ui/core';
@@ -22,9 +22,6 @@ const styles = (theme: any) => ({
   },
   iconRoot: {
     textAlign: 'center' as const,
-  },
-  title: {
-    flexGrow: 1,
   },
   descriptionText: {
     color: grey[500],
@@ -69,13 +66,6 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
 
     return (
       <div className={classes.root}>
-        <AppBar position="fixed">
-          <Toolbar>
-            <Typography variant="h6" className={classes.title}>
-              HCPairing
-            </Typography>
-          </Toolbar>
-        </AppBar>
         <Grid container justify="center" className={classes.marginTopFour}>
           <Grid container item xs={12} justify="center">
             <Grid container item xs={8} sm={8} md={2} xl={2} justify="center">
