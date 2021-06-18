@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 // Import the transition components from Material-UI
@@ -6,7 +7,7 @@ import { Grid, Grow, Button } from '@material-ui/core';
 import { TransitionGroup } from 'react-transition-group';
 import { Cancel as CancelIcon, Search as SearchIcon } from '@material-ui/icons';
 // Import the action from redux
-import { removeSelectedTag } from '../../redux/features/root/action';
+import { removeSelectedTag, setSearchSpecialityCode } from '../../redux/features/root/action';
 
 import { connect } from 'react-redux'
 
@@ -18,6 +19,7 @@ const mapStateToProps = (state: any): Object => {
 const mapDispatchToProps = (dispatch: any) => {
   return {
     removeSelectedTag: (target: string) => dispatch(removeSelectedTag(target)),
+    setSearchSpecialityCode: (target: string) => dispatch(setSearchSpecialityCode(target)),
   };
 };
 
@@ -38,14 +40,21 @@ class SelectedTagsArea extends React.Component<any, any> {
   constructor(props: any) {
     super(props)
     
-    this.handleClick = this.handleClick.bind(this)
+    this.handleTagButtonClick = this.handleTagButtonClick.bind(this)
+    this.handleSearchButtonClick = this.handleSearchButtonClick.bind(this)
   }
 
   // Define handler function
-  handleClick (event: any): void {
+  handleTagButtonClick (event: any): void {
     const { value } = event.currentTarget.dataset;
     if (!value) return;
     this.props.removeSelectedTag(value)
+  }
+  handleSearchButtonClick (event: any): void {
+    // TODO: Fetch for the match speciality code
+    this.props.setSearchSpecialityCode('Cough')
+    // Route to the Result page
+    this.props.history.push('/search')
   }
 
   render (): any {
@@ -59,7 +68,7 @@ class SelectedTagsArea extends React.Component<any, any> {
           {
             selectedTags.map((tag: string): any => (
               <Grow key={`selected-tag-${tag}`}>
-                <Button variant="outlined" color="primary" size="small" endIcon={<CancelIcon/>} className={classes.tagButton} onClick={this.handleClick} data-value={tag}>
+                <Button variant="outlined" color="primary" size="small" endIcon={<CancelIcon/>} className={classes.tagButton} onClick={this.handleTagButtonClick} data-value={tag}>
                 {tag}
                 </Button>
               </Grow>
@@ -69,7 +78,7 @@ class SelectedTagsArea extends React.Component<any, any> {
         </Grid>
         <Grid container item xs={12} justify="center" className={classes.marginTopFour}>
           <Grow in={selectedTags.length > 0}>
-            <Button variant="contained" color="primary" size="large" endIcon={<SearchIcon/>} className={classes.searchButton}>
+            <Button variant="contained" color="primary" size="large" endIcon={<SearchIcon/>} className={classes.searchButton} onClick={this.handleSearchButtonClick}>
               Search healthcare provider
             </Button>
           </Grow>
@@ -80,4 +89,4 @@ class SelectedTagsArea extends React.Component<any, any> {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SelectedTagsArea));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SelectedTagsArea)));

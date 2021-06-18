@@ -1,14 +1,17 @@
 import loadjs from 'loadjs'
 import React from 'react';
+import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 // Import the basic components from Material-UI
 // import { Grid } from '@material-ui/core';
 
 import grey from '@material-ui/core/colors/grey';
 
+const mapStateToProps = (state: any) => ({
+  searchSpecialityCode: state.root.searchSpecialityCode,
+});
 
-
-// Define the props and states for the IndexPage component
+// Define the props and states for the ResultPage component
 const styles = (theme: any) => ({
   root: {
     flexGrow: 1,
@@ -18,19 +21,17 @@ const styles = (theme: any) => ({
   },
 });
 
-// Define the props and states for the IndexPage component
-type ResultPageProps = {
-  classes: any
-}
+// Define the states for the ResultPage component
 type ResultPageState = {
 }
-class IndexPage extends React.Component<ResultPageProps, ResultPageState> {
-  constructor(props: ResultPageProps) {
-    super(props);
-  }
+class ResultPage extends React.Component<any, ResultPageState> {
+  // constructor(props: ResultPageProps) {
+  //   super(props);
+  // }
 
   componentDidMount (): void {
-
+    const { searchSpecialityCode } = this.props
+    console.log(searchSpecialityCode)
     // Load the healthcare locator through loadjs
     loadjs('https://static.healthcarelocator.com/v1/hcl-sdk-web-ui/hcl-sdk.js', async (): Promise<any> => {
       // Initialize HCL SDK
@@ -42,13 +43,11 @@ class IndexPage extends React.Component<ResultPageProps, ResultPageState> {
           (HCLSDK as any).init({
             appName: 'HCPairing',
             apiKey: process.env.REACT_APP_HCLSDK_API_KEY,
-            countries: ['U'],
             entry: {
               screenName: "searchNearMe",
-              // specialtyCode: '', // TODO: Use the specialtyCode obtained from API service
+              specialtyCode: searchSpecialityCode, // TODO: Use the specialtyCode obtained from API service
             },
           });
-          console.log(HCLSDK)
         }
       })()
     })
@@ -75,4 +74,4 @@ class IndexPage extends React.Component<ResultPageProps, ResultPageState> {
   }
 }
 
-export default withStyles(styles)(IndexPage);
+export default connect(mapStateToProps)(withStyles(styles)(ResultPage));

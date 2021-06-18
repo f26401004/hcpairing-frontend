@@ -20,6 +20,8 @@ import Result from './pages/Result';
 
 import reportWebVitals from './reportWebVitals';
 
+console.log(store.getState())
+
 // Define custom theme
 const customTheme = createMuiTheme({
   palette: {

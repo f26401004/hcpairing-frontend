@@ -187,9 +187,6 @@ class SearchBox extends React.Component<any, SearchBoxState> {
                 </InputAdornment>
               }
             />
-            {/* <IconButton type="submit" className={classes.iconButton} aria-label="search">
-              <SearchIcon />
-            </IconButton> */}
           </Grid>
 
           <Popper open={this.state.searchResult.length > 0 && this.state.isSearchResultMenuOpen} anchorEl={this.state.searchBoxRef.current} role={undefined} transition disablePortal className={classes.menu}>
