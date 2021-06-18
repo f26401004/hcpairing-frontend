@@ -4,8 +4,7 @@ import { IconButton } from '@material-ui/core'
 
 import { Mic as MicIcon } from '@material-ui/icons';
 
-
-export default ({ getSpeechRecognitionResult }: any) => {
+const Microphone = ({ getSpeechRecognitionResult }: any) => {
   const listenOnce = () => {
     console.log(getSpeechRecognitionResult)
     SpeechRecognition.startListening({ continuous: false });
@@ -20,3 +19,5 @@ export default ({ getSpeechRecognitionResult }: any) => {
     </IconButton>
   )
 }
+
+export default Microphone

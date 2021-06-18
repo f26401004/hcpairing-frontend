@@ -6,7 +6,7 @@ import API from '../../api'
 import { Grid, Input, Paper,  InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 // Import the icon
-import { Mic as MicIcon, AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';
+import { AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';
 // Import the microphone component
 import Microphone from './Microphone'
 // Import the action from redux
