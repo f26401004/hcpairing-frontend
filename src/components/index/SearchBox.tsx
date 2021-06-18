@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import API from '../../api'
 // Import the basic components from Materil-UI
-import { Grid, Input, Paper, IconButton, InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText } from '@material-ui/core';
+import { Grid, Input, Paper,  InputAdornment, Popper, Grow, ClickAwayListener, MenuItem, MenuList, ListItemText } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 // Import the icon
-import { Mic as MicIcon, AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';
+import { AddCircle as AddCircleIcon, Cancel as CancelIcon } from '@material-ui/icons';
+// Import the microphone component
+import Microphone from './Microphone'
 // Import the action from redux
 import { setSearchType, addSelectedTag, removeSelectedTag } from '../../redux/features/root/action';
 
@@ -69,15 +71,17 @@ const styles = (theme: any) => ({
 class SearchBox extends React.Component<any, SearchBoxState> {
   constructor (props: any) {
     super(props);
+    
     // Define the default value for the state
     this.state = {
       searchKeyword: '',
       searchResult: [],
       searchTimer: setTimeout(() => {}, 0),
       searchBoxRef: React.createRef(),
-      isSearchResultMenuOpen: false,
       paperElevation: 4,
+      isSearchResultMenuOpen: false,
     };
+
     // Bind the handler function with this
     this.handleTextfieldFocus = this.handleTextfieldFocus.bind(this);
     this.handleTextfieldChange = this.handleTextfieldChange.bind(this);
@@ -85,7 +89,9 @@ class SearchBox extends React.Component<any, SearchBoxState> {
     this.handleSearchResultClose = this.handleSearchResultClose.bind(this);
     this.handleMouseOut = this.handleMouseOut.bind(this);
     this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.getSpeechRecognitionResult = this.getSpeechRecognitionResult.bind(this);
   }
+
 
   // Define built-in function
   isSelected (payload: string): boolean {
@@ -103,6 +109,20 @@ class SearchBox extends React.Component<any, SearchBoxState> {
       // TODO: Display error message through snackbar
     }
   }
+  getSpeechRecognitionResult (transcript: string): void {
+    // Set the search keyword obtained from microphone component
+    this.setState({
+      ...this.state,
+      searchKeyword: transcript,
+    });
+    this.fetchSearchResultByPrefix(transcript).then((): void => {
+      // Set the menu anchor element after obtaining search result
+      this.setState({
+        ...this.state,
+        isSearchResultMenuOpen: true
+      });
+    })
+  }
 
   // Define handler function
   handleTextfieldFocus (event: any): void {
@@ -113,31 +133,40 @@ class SearchBox extends React.Component<any, SearchBoxState> {
   }
   handleTextfieldChange (event: any): void {
     const { value } = event.target;
-    if (value.length === 0) return;
     // Display the search result menu agian if the value remain the same as searchKeywork in state
     if (value === this.state.searchKeyword) {
       this.setState({
         ...this.state,
         isSearchResultMenuOpen: true
       });
-    } else {
-      // Search the result after 100ms delay to prevent continuous and useless searching
-      clearTimeout(this.state.searchTimer)
+      return
+    }
+    // Search the result after 100ms delay to prevent continuous and useless searching
+    clearTimeout(this.state.searchTimer)
+    if (value.length === 0) {
       this.setState({
         ...this.state,
-        searchKeyword: value,
-        searchTimer: setTimeout(() => {
-          this.fetchSearchResultByPrefix(value).then((): void => {
-            console.log(this.state.searchBoxRef.current)
-            // Set the menu anchor element after obtaining search result
-            this.setState({
-              ...this.state,
-              isSearchResultMenuOpen: true
-            });
-          })
-        }, 100)
-      });
+        searchKeyword: '',
+        searchResult: [],
+      })
+      return
     }
+      
+    this.setState({
+      ...this.state,
+      searchKeyword: value,
+      searchTimer: setTimeout(() => {
+        this.fetchSearchResultByPrefix(value).then((): void => {
+          console.log(this.state.searchBoxRef.current)
+          // Set the menu anchor element after obtaining search result
+          this.setState({
+            ...this.state,
+            isSearchResultMenuOpen: true
+          });
+        })
+      }, 100)
+    });
+    
   }
   handleSearchResultClick (event: any): void {
     const { value } = event.currentTarget.dataset;
@@ -162,6 +191,7 @@ class SearchBox extends React.Component<any, SearchBoxState> {
     this.setState({ paperElevation: 4 });
   }
 
+
   render (): any {
     const { classes } = this.props;
 
@@ -172,6 +202,7 @@ class SearchBox extends React.Component<any, SearchBoxState> {
           onMouseOut={this.handleMouseOut}>
           <Grid container justify="space-between" alignItems="center" ref={this.state.searchBoxRef}>
             <Input
+              value={this.state.searchKeyword}
               autoFocus
               disableUnderline
               className={classes.inputField}
@@ -181,15 +212,10 @@ class SearchBox extends React.Component<any, SearchBoxState> {
               onFocus={this.handleTextfieldFocus}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton type="submit" className={classes.iconButton} aria-label="voice" edge="end">
-                    <MicIcon />
-                  </IconButton>
+                  <Microphone getSpeechRecognitionResult={this.getSpeechRecognitionResult} />
                 </InputAdornment>
               }
             />
-            {/* <IconButton type="submit" className={classes.iconButton} aria-label="search">
-              <SearchIcon />
-            </IconButton> */}
           </Grid>
 
           <Popper open={this.state.searchResult.length > 0 && this.state.isSearchResultMenuOpen} anchorEl={this.state.searchBoxRef.current} role={undefined} transition disablePortal className={classes.menu}>
