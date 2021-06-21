@@ -18,6 +18,11 @@ export const removeSelectedTag = (payload: string): action => ({
   payload,
 });
 
+export const clearSelectedTag = (): action => ({
+  type: 'CLEAR_SELECTED_TAG',
+  payload: '',
+})
+
 export const setSearchSpecialityCode = (payload: string): action => ({
   type: 'SET_SEARCH_SPECIALITY_CODE',
   payload,

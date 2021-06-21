@@ -37,6 +37,12 @@ const rootReducer = (state = rootState, actionInstance: action) => {
         searchSpecialityCode: actionInstance.payload
       }
     }
+    case 'CLEAR_SELECTED_TAG': {
+      return {
+        ...state,
+        selectedTags: [],
+      }
+    }
     default:
       return state
   }
