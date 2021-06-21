@@ -33,8 +33,7 @@ const getZipcode = async (location: GeoLocation): Promise<string> => {
 
 const postRecords = async (records: Records): Promise<Array<string>> => {
   const { data } = await axios.post('/records', records)
-
-  return data.specialities
+  return data.specialties
 }
 
 const searchApi = {

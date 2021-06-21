@@ -7,20 +7,21 @@ import { Grid, Grow, Button, CircularProgress } from '@material-ui/core';
 import { TransitionGroup } from 'react-transition-group';
 import { Cancel as CancelIcon, Search as SearchIcon } from '@material-ui/icons';
 // Import the action from redux
-import { removeSelectedTag, setSearchSpecialityCode, } from '../../redux/features/root/action';
+import { removeSelectedTag, setSearchSpecialityCode, clearSelectedTag } from '../../redux/features/root/action';
 import API from '../../api'
 
 import { connect } from 'react-redux'
 
 const mapStateToProps = (state: any): Object => {
   return {
-    selectedTags: state.root.selectedTags
+    selectedTags: state.root.selectedTags,
   };
 };
 const mapDispatchToProps = (dispatch: any) => {
   return {
     removeSelectedTag: (target: string) => dispatch(removeSelectedTag(target)),
     setSearchSpecialityCode: (target: string) => dispatch(setSearchSpecialityCode(target)),
+    clearSelectedTag: () => dispatch(clearSelectedTag()),
   };
 };
 
@@ -42,9 +43,9 @@ class SelectedTagsArea extends React.Component<any, any> {
     super(props)
 
     this.state = {
-      isSearching: false,
+      isSearching: false
     }
-    
+
     this.handleTagButtonClick = this.handleTagButtonClick.bind(this)
     this.handleSearchButtonClick = this.handleSearchButtonClick.bind(this)
   }
@@ -61,40 +62,46 @@ class SelectedTagsArea extends React.Component<any, any> {
       isSearching: true
     })
     // Get the current location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position): Promise<void> => {
-        const lat = position.coords.latitude
-        const lng = position.coords.longitude
-        // Fetch for the zip code
-        const zipcode = await API.search.getZipcode({ lat, lng })
-        console.log(zipcode)
-
-        // Fetch for the matched speciality code
-        const specialities = await API.search.postRecords({
-          zipcode,
-          tags: this.props.selectedTags
-        })
-        console.log(specialities)
-        if (specialities.length > 0) {
-          this.props.setSearchSpecialityCode(specialities)
-        } else {
-          // Set the default speciality to Cough
-          this.props.setSearchSpecialityCode('Cough')
-        }
-        // Route to the Result page
-        this.props.history.push('/search')
-      });
-    } else {
+    if (!navigator.geolocation) {
       alert("Sorry, but Geolocation is not supported by this browser.");
+      this.setState({
+        ...this.state,
+        isSearching: false
+      })
     }
-    this.setState({
-      ...this.state,
-      isSearching: false
-    })
+
+    navigator.geolocation.getCurrentPosition(async (position): Promise<void> => {
+      const lat = position.coords.latitude
+      const lng = position.coords.longitude
+      // Fetch for the zip code
+      const zipcode = await API.search.getZipcode({ lat, lng })
+      console.log(zipcode)
+
+      // Fetch for the matched speciality code
+      const specialities = await API.search.postRecords({
+        zipcode,
+        tags: this.props.selectedTags
+      })
+      console.log(specialities)
+      if (specialities.length > 0) {
+        this.props.setSearchSpecialityCode(specialities[0])
+      } else {
+        // Set the default speciality to Cough
+        this.props.setSearchSpecialityCode('Cough')
+      }
+      // Route to the Result page
+      this.props.history.push('/search')
+      this.props.clearSelectedTag()
+      this.setState({
+        ...this.state,
+        isSearching: false
+      })
+    });
   }
 
   render (): any {
     const { classes, selectedTags } = this.props;
+    const { isSearching } = this.state;
 
     return (
       <Grid container justify="center">
@@ -113,7 +120,7 @@ class SelectedTagsArea extends React.Component<any, any> {
         </Grid>
         <Grid container item xs={12} justify="center" className={classes.marginTopFour}>
           <Grow in={selectedTags.length > 0}>
-            <Button color="primary" variant="contained" endIcon={this.state.isSearching ? <CircularProgress/> : <SearchIcon/>} className={classes.searchButton} onClick={this.handleSearchButtonClick}>
+            <Button color="primary" variant="contained" endIcon={isSearching ? <CircularProgress size={18} color="inherit"/> : <SearchIcon />} className={classes.searchButton} onClick={this.handleSearchButtonClick}>
               Search healthcare provider
             </Button>
           </Grow>
