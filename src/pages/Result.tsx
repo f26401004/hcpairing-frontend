@@ -2,9 +2,7 @@ import loadjs from 'loadjs'
 import React from 'react';
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
-// Import the basic components from Material-UI
-// import { Grid } from '@material-ui/core';
-
+import { Backdrop, CircularProgress } from '@material-ui/core';
 import grey from '@material-ui/core/colors/grey';
 
 const mapStateToProps = (state: any) => ({
@@ -19,15 +17,25 @@ const styles = (theme: any) => ({
     height: 'calc(100vh - 64px)',
     marginTop: '64px'
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 });
 
 // Define the states for the ResultPage component
 type ResultPageState = {
+  isLoaded: boolean,
 }
 class ResultPage extends React.Component<any, ResultPageState> {
-  // constructor(props: ResultPageProps) {
-  //   super(props);
-  // }
+
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      isLoaded: false
+    }
+  }
 
   componentDidMount (): void {
     const { searchSpecialityCode } = this.props
@@ -35,19 +43,26 @@ class ResultPage extends React.Component<any, ResultPageState> {
     // Load the healthcare locator through loadjs
     loadjs('https://static.healthcarelocator.com/v1/hcl-sdk-web-ui/hcl-sdk.js', async (): Promise<any> => {
       // Initialize HCL SDK
-      (async function () {
+      (async  () => {
         await React.createElement('hcl-sdk')
         await customElements.whenDefined('hcl-sdk');
         const HCLSDK = document.querySelector('hcl-sdk');
+
         if (HCLSDK) {
           (HCLSDK as any).init({
             appName: 'HCPairing',
             apiKey: process.env.REACT_APP_HCLSDK_API_KEY,
             entry: {
               screenName: "searchNearMe",
-              specialtyCode: searchSpecialityCode, // TODO: Use the specialtyCode obtained from API service
+              specialtyCode: searchSpecialityCode,
             },
           });
+          setTimeout(() => {
+            this.setState({
+              ...this.state,
+              isLoaded: true
+            })
+          }, 1000)
         }
       })()
     })
@@ -64,11 +79,12 @@ class ResultPage extends React.Component<any, ResultPageState> {
   render(): any {
     const { classes } = this.props;
 
-    
-
     return (
       <div className={classes.root}>
         <hcl-sdk />
+        <Backdrop className={classes.backdrop} open={!this.state.isLoaded}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
     );
   }
