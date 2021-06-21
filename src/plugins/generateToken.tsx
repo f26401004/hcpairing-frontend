@@ -4,6 +4,17 @@ import crypto from 'crypto'
 
 // Token request function
 const generateToken = async (): Promise<string> => {
+  // Read the access token stored in local storage
+  const accessToken = localStorage.getItem('accessToken');
+  const expiredTime = parseInt((localStorage.getItem('expiredTime') as string));
+  if (accessToken) {
+    const currentTime = new Date().getTime();
+    if (currentTime < expiredTime) {
+      return accessToken;
+    }
+  }
+
+
   // Initialize OAuth with your HERE OAuth credentials from the credentials file that you downloaded above
   const oauth = new OAuth({
     consumer: {
@@ -35,7 +46,10 @@ const generateToken = async (): Promise<string> => {
       function (error: any, response: any, body: any) {
         if (response.statusCode === 200) {
           const result = JSON.parse(response.body);
-          resolve(result.access_token)
+          resolve(result.access_token);
+          // Save current access token into local storage
+          localStorage.setItem('accessToken', result.access_token)
+          localStorage.setItem('expiredTime', (new Date().getTime() + result.expires_in).toString())
           return
         }
         reject(error)
