@@ -3,11 +3,12 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 // Import the transition components from Material-UI
-import { Grid, Grow, Button } from '@material-ui/core';
+import { Grid, Grow, Button, CircularProgress } from '@material-ui/core';
 import { TransitionGroup } from 'react-transition-group';
 import { Cancel as CancelIcon, Search as SearchIcon } from '@material-ui/icons';
 // Import the action from redux
-import { removeSelectedTag, setSearchSpecialityCode } from '../../redux/features/root/action';
+import { removeSelectedTag, setSearchSpecialityCode, } from '../../redux/features/root/action';
+import API from '../../api'
 
 import { connect } from 'react-redux'
 
@@ -39,6 +40,10 @@ const styles = (theme: any) => ({
 class SelectedTagsArea extends React.Component<any, any> {
   constructor(props: any) {
     super(props)
+
+    this.state = {
+      isSearching: false,
+    }
     
     this.handleTagButtonClick = this.handleTagButtonClick.bind(this)
     this.handleSearchButtonClick = this.handleSearchButtonClick.bind(this)
@@ -50,16 +55,46 @@ class SelectedTagsArea extends React.Component<any, any> {
     if (!value) return;
     this.props.removeSelectedTag(value)
   }
-  handleSearchButtonClick (event: any): void {
-    // TODO: Fetch for the match speciality code
-    this.props.setSearchSpecialityCode('Cough')
-    // Route to the Result page
-    this.props.history.push('/search')
+  async handleSearchButtonClick (event: any): Promise<void> {
+    this.setState({
+      ...this.state,
+      isSearching: true
+    })
+    // Get the current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position): Promise<void> => {
+        const lat = position.coords.latitude
+        const lng = position.coords.longitude
+        // Fetch for the zip code
+        const zipcode = await API.search.getZipcode({ lat, lng })
+        console.log(zipcode)
+
+        // Fetch for the matched speciality code
+        const specialities = await API.search.postRecords({
+          zipcode,
+          tags: this.props.selectedTags
+        })
+        console.log(specialities)
+        if (specialities.length > 0) {
+          this.props.setSearchSpecialityCode(specialities)
+        } else {
+          // Set the default speciality to Cough
+          this.props.setSearchSpecialityCode('Cough')
+        }
+        // Route to the Result page
+        this.props.history.push('/search')
+      });
+    } else {
+      alert("Sorry, but Geolocation is not supported by this browser.");
+    }
+    this.setState({
+      ...this.state,
+      isSearching: false
+    })
   }
 
   render (): any {
     const { classes, selectedTags } = this.props;
-    console.log(selectedTags)
 
     return (
       <Grid container justify="center">
@@ -78,7 +113,7 @@ class SelectedTagsArea extends React.Component<any, any> {
         </Grid>
         <Grid container item xs={12} justify="center" className={classes.marginTopFour}>
           <Grow in={selectedTags.length > 0}>
-            <Button variant="contained" color="primary" size="large" endIcon={<SearchIcon/>} className={classes.searchButton} onClick={this.handleSearchButtonClick}>
+            <Button color="primary" variant="contained" endIcon={this.state.isSearching ? <CircularProgress/> : <SearchIcon/>} className={classes.searchButton} onClick={this.handleSearchButtonClick}>
               Search healthcare provider
             </Button>
           </Grow>
