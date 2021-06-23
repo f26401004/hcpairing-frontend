@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Button, Grid } from '@material-ui/core';
+import HelpModal from './components/index/HelpModal';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 import {
@@ -13,7 +14,9 @@ import './styles/theme.css';
 import '@fontsource/roboto';
 // Import Redux store
 import store from './redux/store';
+import { connect } from 'react-redux'
 import { Provider } from 'react-redux';
+import { setIsOpenHelpModal } from './redux/features/root/action';
 // Import page components
 import Index from './pages/Index';
 import Result from './pages/Result';
@@ -40,16 +43,59 @@ const customTheme = createMuiTheme({
   },
 });
 
+// const handleClickHelpButton = (): void => {
+//   state.isOpenHelpModal = true
+//   console.log(state)
+// };
+// const handleCloseHelpModal = (): void => {
+//   state.isOpenHelpModal = false
+// };
 
-ReactDOM.render(
-  <Provider store={store}>
-    <React.StrictMode>
+console.log(store.getState())
+
+
+
+const mapStateToProps = (state: any): Object => {
+  return {
+    isOpenHelpModal: state.root.isOpenHelpModal,
+  };
+};
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    setIsOpenHelpModal: (target: boolean) => dispatch(setIsOpenHelpModal(target)),
+  };
+};
+
+class App extends React.Component<any, any> {
+  constructor (props: any) {
+    super(props);
+
+    this.handleClickHelpModal = this.handleClickHelpModal.bind(this);
+    this.hnadleCloseHelpModal = this.hnadleCloseHelpModal.bind(this);
+  }
+  
+  handleClickHelpModal () {
+    this.props.setIsOpenHelpModal(true)
+  }
+
+  hnadleCloseHelpModal () {
+    this.props.setIsOpenHelpModal(false)
+  }
+
+  render () {
+    const { isOpenHelpModal, setIsOpenHelpModal } = this.props;
+    console.log(setIsOpenHelpModal);
+    return (
       <ThemeProvider theme={customTheme}>
         <AppBar position="fixed">
           <Toolbar>
-            <Typography variant="h6">
-              HCPairing
-            </Typography>
+            <Grid container justify="space-between" alignItems="center">
+              <Typography variant="h6">
+                HCPairing
+              </Typography>
+              <Button color="inherit" size="large" onClick={this.handleClickHelpModal}> Help </Button>
+              <HelpModal open={isOpenHelpModal} handleClose={this.hnadleCloseHelpModal} ></HelpModal>
+            </Grid>
           </Toolbar>
         </AppBar>
         <Router>
@@ -59,6 +105,16 @@ ReactDOM.render(
           </Switch>
         </Router>
       </ThemeProvider>
+    )
+  }
+}
+
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <React.StrictMode>
+        <ConnectedApp />
     </React.StrictMode>
   </Provider>,
   document.getElementById('root')

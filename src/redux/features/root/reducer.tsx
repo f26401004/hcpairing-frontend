@@ -7,6 +7,7 @@ const rootState = {
   searchType: 'healthcare-provider',
   selectedTags: [],
   searchSpecialityCode: '',
+  isOpenHelpModal: false,
 }
 
 const rootReducer = (state = rootState, actionInstance: action) => {
@@ -41,6 +42,12 @@ const rootReducer = (state = rootState, actionInstance: action) => {
       return {
         ...state,
         selectedTags: [],
+      }
+    }
+    case 'SET_IS_OPEN_HELP_MODAL': {
+      return {
+        ...state,
+        isOpenHelpModal: actionInstance.payload
       }
     }
     default:

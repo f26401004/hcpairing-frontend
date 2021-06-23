@@ -164,7 +164,7 @@ class SearchBox extends React.Component<any, SearchBoxState> {
             isSearchResultMenuOpen: true
           });
         })
-      }, 100)
+      }, 200)
     });
     
   }
