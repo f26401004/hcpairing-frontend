@@ -18,7 +18,7 @@ const styles = (theme: any) => ({
     marginTop: '64px'
   },
   backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 999999,
     color: '#fff',
   },
 });
@@ -26,6 +26,7 @@ const styles = (theme: any) => ({
 // Define the states for the ResultPage component
 type ResultPageState = {
   isLoaded: boolean,
+  loadTimer: NodeJS.Timeout,
 }
 class ResultPage extends React.Component<any, ResultPageState> {
 
@@ -33,7 +34,8 @@ class ResultPage extends React.Component<any, ResultPageState> {
     super(props);
 
     this.state = {
-      isLoaded: false
+      isLoaded: false,
+      loadTimer: setTimeout(() => {}, 0),
     }
   }
 
@@ -48,6 +50,22 @@ class ResultPage extends React.Component<any, ResultPageState> {
         await customElements.whenDefined('hcl-sdk');
         const HCLSDK = document.querySelector('hcl-sdk');
 
+        // Use MutationObserver to detect if the hcl-sdk web UI is loaded
+        const HCLSDKObserver = new MutationObserver((mutationList: any) => {
+          clearTimeout(this.state.loadTimer)
+          this.setState({
+            ...this.state,
+            loadTimer: setTimeout(() => {
+              clearTimeout(this.state.loadTimer)
+              this.setState({
+                ...this.state,
+                isLoaded: true,
+              })
+            }, 1000)
+          })
+        });
+        HCLSDKObserver.observe((HCLSDK as any).shadowRoot, { attributes: true, subtree: true, childList: true })
+
         if (HCLSDK) {
           (HCLSDK as any).init({
             appName: 'HCPairing',
@@ -57,23 +75,25 @@ class ResultPage extends React.Component<any, ResultPageState> {
               specialtyCode: searchSpecialityCode,
             },
           });
-          setTimeout(() => {
-            this.setState({
-              ...this.state,
-              isLoaded: true
-            })
-          }, 1000)
+
+          
+          // setTimeout(() => {
+          //   this.setState({
+          //     ...this.state,
+          //     isLoaded: true
+          //   })
+          // }, 1000)
         }
       })()
     })
-    // Load the healthcare locator API through loadjs
-    loadjs('https://static.healthcarelocator.com/v1/hcl-sdk-api/hcl-sdk-api.js', (): void => {
-      // Initialize HCL SDK API
-      const hclAPI = new (window as any).HclAPI({
-        apiKey: process.env.REACT_APP_HCLSDK_API_KEY
-      });
-      console.log(hclAPI)
-    })
+    // // Load the healthcare locator API through loadjs
+    // loadjs('https://static.healthcarelocator.com/v1/hcl-sdk-api/hcl-sdk-api.js', (): void => {
+    //   // Initialize HCL SDK API
+    //   const hclAPI = new (window as any).HclAPI({
+    //     apiKey: process.env.REACT_APP_HCLSDK_API_KEY
+    //   });
+    //   console.log(hclAPI)
+    // })
   }
 
   render(): any {
