@@ -27,3 +27,8 @@ export const setSearchSpecialityCode = (payload: string): action => ({
   type: 'SET_SEARCH_SPECIALITY_CODE',
   payload,
 });
+
+export const setIsOpenHelpModal = (payload: boolean): action => ({
+  type: 'SET_IS_OPEN_HELP_MODAL',
+  payload
+});
