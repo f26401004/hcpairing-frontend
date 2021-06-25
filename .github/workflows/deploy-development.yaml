@@ -51,4 +51,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           app_location: "/" # App source code path
-          app_artifact_location: "build" # Built app content directory - optional
+          app_artifact_location: "dist" # Built app content directory - optional
