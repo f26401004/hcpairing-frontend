@@ -21,11 +21,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build The App
-        run: npm run build
         env:
           REACT_APP_HCLSDK_API_KEY: ${{ secrets.REACT_APP_HCLSDK_API_KEY }}
           REACT_APP_HERE_ACCESS_KEY: ${{ secrets.REACT_APP_HERE_ACCESS_KEY }}
           REACT_APP_HERE_ACCESS_KEY_SECRET: ${{ secrets.REACT_APP_HERE_ACCESS_KEY_SECRET }}
+        run: npm run build-dev
       - name: Archieve Development Artifact
         uses: actions/upload-artifact@master
         with:
