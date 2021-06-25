@@ -70,6 +70,7 @@ class ResultPage extends React.Component<any, ResultPageState> {
           (HCLSDK as any).init({
             appName: 'HCPairing',
             apiKey: process.env.REACT_APP_HCLSDK_API_KEY,
+            countries: ['US'],
             entry: {
               screenName: "searchNearMe",
               specialtyCode: searchSpecialityCode,
