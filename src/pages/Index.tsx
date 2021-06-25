@@ -80,7 +80,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
             <Grid container item xs={11} sm={11} md={4} xl={4}>
               <Grow in={this.state.elementsDisplayed[1]} timeout={{ enter: 400 }}>
                 <Typography variant="subtitle1" className={classes.descriptionText}>
-                  An effective consultant assisting in overcoming obstacles with proven results and policies under the struggling periods.
+                  Bridge the gap between underserved communities and healthcare providers.
                 </Typography>
               </Grow>
             </Grid>
