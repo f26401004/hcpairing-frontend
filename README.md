@@ -10,8 +10,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/RainrainWu/hcpairing-frontend">
-    <img src="https://i.imgur.com/ZAr4P5D.png" alt="Logo" width="447" height="150">
+  <a href="https://tinyurl.com/hcpairing">
+    <img src="https://i.imgur.com/ZAr4P5D.png" alt="Logo" width="267" height="150">
   </a>
 
   <h3 align="center">HCPairing</h3>
@@ -19,7 +19,7 @@
   <p align="center">
     Bridge the gap between underserved communities and healthcare providers.
     <br />
-    <a href="https://github.com/RainrainWu/hcpairing-frontend"><strong>Explore the services »</strong></a>
+    <a href="https://tinyurl.com/hcpairing"><strong>Explore the services »</strong></a>
     <br />
     <br />
     <a href="https://github.com/RainrainWu/hcpairing-frontend">View Demo</a>
@@ -62,8 +62,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://gentle-hill-05b25e000.azurestaticapps.net/)
 
 It is very difficult for underserved communities to access the right healthcare provider with the specialties for their symptoms. So we try to design the journey to bridge the gap between them.
 
