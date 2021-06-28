@@ -10,16 +10,16 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/RainrainWu/hcpairing-frontend">
-    <img src="https://i.imgur.com/WwUvfgm.png" alt="Logo" width="447" height="150">
+  <a href="https://tinyurl.com/hcpairing">
+    <img src="https://i.imgur.com/ZAr4P5D.png" alt="Logo" width="267" height="150">
   </a>
 
   <h3 align="center">HCPairing</h3>
 
   <p align="center">
-    An effective consultant assisting in overcoming obstacles with proven results and policies under the struggling periods.
+    Bridge the gap between underserved communities and healthcare providers.
     <br />
-    <a href="https://github.com/RainrainWu/hcpairing-frontend"><strong>Explore the services »</strong></a>
+    <a href="https://tinyurl.com/hcpairing"><strong>Explore the services »</strong></a>
     <br />
     <br />
     <a href="https://github.com/RainrainWu/hcpairing-frontend">View Demo</a>
@@ -63,18 +63,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-TBD
+It is very difficult for underserved communities to access the right healthcare provider with the specialties for their symptoms. So we try to design the journey to bridge the gap between them.
 
 ### Built With
 
-The project is mainly built with the following well-known frameworks and libraires.
-* [React.js](https://reactjs.org/)
-* [Redux](https://redux.js.org/)
-* [Material-UI](https://material-ui.com/)
+The project is mainly built with the well-known frameworks and libraires like [React.js](https://reactjs.org/), [Redux](https://redux.js.org/), [Material-UI](https://material-ui.com/).
 
-
+* Based on the requirements above, we decide to build a website with a human-friendly interface as the implementation. We simply divide the service into frontend and backend, the former includes SDK integration and UI presentation, and the latter contains the conversion system and storagement.
+* The project is driven by the Scrumban cycle, we maintain a public bulletin board and a knowledge base using HackMD throughout the development, it allows us to converge ideas quickly and control the schedule and resources.
+* We finally deploy the service on Microsoft Azure via CI CD pipeline, maintaining the equipment by ourselves is too much trouble for us, the free quota of public cloud is a great choice for the hackathon.
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -99,9 +96,15 @@ Besides using the published version, you can compile your own and make pull requ
 ### Step two - Install dependencies
 `npm install`
 ### Step three - Build
+`npm run build-dev`
+
+The code will be generated in `dist/` directory in development mode
+
+or
+
 `npm run build`
 
-The code will be generated in `build/` directory
+The code will be generated in `build/` disrectory in production mode
 
 ### Step four - Host with http-server
 `npx http-server ./build -p [port]`
@@ -113,7 +116,7 @@ Be sure that you have already installed npx through `npm install -g npx`.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-TBD
+Users can pick the tags that describe their symptoms well, our service will help them convert into corresponding healthcare specialties, and display the candidates of healthcare providers which meet their needs.
 
 <!-- ROADMAP -->
 ## Roadmap
